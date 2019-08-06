@@ -38,6 +38,5 @@ func (this *Users) CreateData() (int, error) {
 		return 0, err
 	}
 	id := int(idUser.ID)
-	fmt.Println("id", idUser.ID)
 	return id, nil
 }

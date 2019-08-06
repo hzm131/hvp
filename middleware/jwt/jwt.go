@@ -95,16 +95,21 @@ var mySigningKey = []byte("hzwy23")
 //创建令牌
 func CreateJWT(id int) (ss string, err error) {
 
-	// 创建声明 就是设置token的一些东西
+	/*// 创建声明 就是设置token的一些东西
 	claims := &jwt.StandardClaims{
 		NotBefore: int64(time.Now().Unix() - 1000), //token信息生效时间.这个值可以不设置,但是设定后,一定要大于当前Unix UTC,否则token将会延迟生效.
 		ExpiresAt: int64(time.Now().Unix() + 1000), //过期时间.通常与Unix UTC时间做对比过期后token无效
 		Issuer:    "test",                          //是签名的发行者
 		Id:        string(id),
+	}*/
+	claims := jwt.MapClaims{
+		"userId": id,
+		"exp":    int64(time.Now().Unix() + 1000),
+		"iss":    "hzm",
 	}
+
 	//创建签名 第一个参数是算法 第二个参数是配置
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
 	//获取完整的签名令牌
 	ss, err = token.SignedString(mySigningKey)
 	if err != nil {
@@ -133,7 +138,9 @@ func ParseToken(c *gin.Context, str string) {
 				})
 				return
 			}
-			userId := int(claims["id"].(float64))
+			fmt.Println(claims)
+			fmt.Println(&claims)
+			userId := claims["userId"]
 			c.Set("userId", userId)
 			c.Next()
 		} else {

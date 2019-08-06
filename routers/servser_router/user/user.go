@@ -52,6 +52,7 @@ func Login(c *gin.Context) {
 		"status": 200,
 		"error":  nil,
 		"data":   str,
+		"userId": id,
 	})
 }
 
