@@ -6,6 +6,7 @@ import (
 	"com/routers/servser_router/user"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func InitRouter() *gin.Engine {
@@ -31,9 +32,16 @@ func InitRouter() *gin.Engine {
 	testApi := r.Group("/test")
 	testApi.Use(auth.GetAuth)
 	{
-		testApi.POST("/1", func(context *gin.Context) {
-			value, _ := context.Get("userId")
+		testApi.GET("/:id", func(c *gin.Context) {
+			id := c.Param("id")
+			value, _ := c.Get("userId")
 			fmt.Println("value", value)
+			c.JSON(http.StatusOK, gin.H{
+				"status": 200,
+				"error":  nil,
+				"data":   "徐倩雯。。。",
+				"id":     id,
+			})
 		})
 	}
 	return r

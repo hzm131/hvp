@@ -3,6 +3,7 @@ package models
 import (
 	"com/models/servser_model"
 	"com/models/servser_model/users"
+	"com/models/servser_model/video"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 )
@@ -19,7 +20,7 @@ func init() {
 		panic(err)
 	}
 	//创建表 自动迁移
-	Db.AutoMigrate(&users.Users{})
+	Db.AutoMigrate(&users.Users{}, &video.Video{}, &video.Comment{}, &video.Reply{})
 
 	servser_model.ModelInit(Db)
 }
