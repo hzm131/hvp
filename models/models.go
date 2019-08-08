@@ -19,8 +19,10 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+
+	Db.SingularTable(true)
 	//创建表 自动迁移
-	Db.AutoMigrate(&users.Users{}, &video.Video{}, &video.Comment{}, &video.Reply{})
+	Db.AutoMigrate(&users.Users{}, &video.Video{}, &video.Comment{}, &video.Reply{},&video.ImageSrc{},&video.VideoSrc{})
 
 	servser_model.ModelInit(Db)
 }

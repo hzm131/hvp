@@ -1,14 +1,14 @@
 package upload
 
 import (
-	"com/models"
+	"com/models/servser_model/video"
 	"github.com/gin-gonic/gin"
 	"io"
 	"net/http"
 	"os"
 )
 
-func UploadImages(c *gin.Context) {
+func UploadImage(c *gin.Context) {
 	file, header, err := c.Request.FormFile("file")
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
@@ -42,7 +42,11 @@ func UploadImages(c *gin.Context) {
 		return
 	}
 	//封面表添加
-	id, err := models.CreatedImage("http://192.168.2.219:3000/images/" + filename)
+
+	imageSrc := video.ImageSrc{
+		SrcPath:"http://192.168.2.219:3000/images/" + filename,
+	}
+	id, err := imageSrc.CreatedImageSrc()
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"status": 400,
@@ -58,7 +62,7 @@ func UploadImages(c *gin.Context) {
 	})
 }
 
-func UploadVideos(c *gin.Context) {
+func UploadVideo(c *gin.Context) {
 	file, header, err := c.Request.FormFile("file")
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
@@ -76,7 +80,7 @@ func UploadVideos(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"status": 400,
 			"error":  err,
-			"data":   "文件创建失败",
+			"data":   "视频创建失败",
 		})
 		return
 	}
@@ -93,7 +97,10 @@ func UploadVideos(c *gin.Context) {
 		return
 	}
 	// 返回视频路径id
-	id, err := models.CreatedVideoSrc("http://192.168.2.219:3000/videos/" + filename)
+	videoSrc := video.VideoSrc{
+		SrcPath:"http://127.0.0.1:3000/videos/" + filename,
+	}
+	id, err := videoSrc.CreatedVideoSrc()
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"status": 400,
@@ -105,6 +112,6 @@ func UploadVideos(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"status": 200,
 		"error":  nil,
-		"data":   id,
+		"id":   id,
 	})
 }

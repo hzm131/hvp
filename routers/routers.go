@@ -3,6 +3,7 @@ package routers
 import (
 	_ "com/models"
 	"com/routers/auth"
+	"com/routers/servser_router/upload"
 	"com/routers/servser_router/user"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -18,7 +19,7 @@ func InitRouter() *gin.Engine {
 
 	//静态文件服务 提供图片路径
 	r.Static("/images", "./public/upload/images")
-	r.Static("/static/images", "./public/images")
+	//r.Static("/static/images", "./public/images")
 	r.Static("/videos", "./public/upload/videos")
 	r.Static("/index.html", "./public/dist")
 
@@ -28,6 +29,16 @@ func InitRouter() *gin.Engine {
 		userApi.POST("/login", user.Login)
 		userApi.POST("/registered", user.Registered)
 	}
+
+	//上传模块
+	uploadApi := r.Group("/upload")
+	uploadApi.Use(auth.GetAuth)
+	{
+		uploadApi.POST("/video",upload.UploadVideo) //上传视频
+		uploadApi.POST("/image",upload.UploadImage) //上传视频
+	}
+
+
 
 	testApi := r.Group("/test")
 	testApi.Use(auth.GetAuth)
