@@ -5,6 +5,7 @@ import (
 	"com/routers/auth"
 	"com/routers/servser_router/upload"
 	"com/routers/servser_router/user"
+	videoManagement "com/routers/servser_router/video"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -34,11 +35,16 @@ func InitRouter() *gin.Engine {
 	uploadApi := r.Group("/upload")
 	uploadApi.Use(auth.GetAuth)
 	{
-		uploadApi.POST("/video",upload.UploadVideo) //上传视频
-		uploadApi.POST("/image",upload.UploadImage) //上传视频
+		uploadApi.POST("/video", upload.UploadVideo) //上传视频
+		uploadApi.POST("/image", upload.UploadImage) //上传视频
 	}
 
-
+	videoApi := r.Group("/video")
+	videoApi.Use(auth.GetAuth)
+	{
+		videoApi.POST("/create", videoManagement.CreateVideo) //上传视频
+		videoApi.GET("/query", videoManagement.QueryVideo)    //上传视频
+	}
 
 	testApi := r.Group("/test")
 	testApi.Use(auth.GetAuth)
