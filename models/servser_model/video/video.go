@@ -94,25 +94,27 @@ func (this *Video) CreatedVideo() (int, error) {
 	return id, nil
 }
 
-type ToTalVideo struct {
+type TotalVideo struct {
 	Videos []Video `json:"videos"`
-	Total  int     `json:"total"`
+	Total int `json:"total"`
 }
 
-func (this *Video) QueryVideos(limit string, offset string) (totalVideo ToTalVideo, err error) {
+
+func (this *Video) QueryVideos(condition string,limit string, offset string) ( totalVideo TotalVideo, err error) {
+	cond := "%"+condition+"%"
+	fmt.Println("cond",cond)
 	if limit == "" {
 		limit = "10"
 	}
 	if offset == "" {
 		offset = "0"
 	}
+	count := servser_model.Db.Raw("select * from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where concat(name) like ?",&cond).Scan(&totalVideo.Videos).RowsAffected
+	totalVideo.Total = int(count)
 
-	var videos []Video
-
-	query := servser_model.Db.Raw("select * from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id limit ? offset ?", &limit, &offset).Scan(&videos)
-	if err := query.Error; err != nil {
-		fmt.Println("查询失败")
-		return nil, err
+	query := servser_model.Db.Raw("select * from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where concat(name) like ? limit ? offset ?",&cond,&limit, &offset).Scan(&totalVideo.Videos)
+	if err = query.Error; err != nil{
+		return
 	}
 	return
 }
