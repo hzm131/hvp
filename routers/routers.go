@@ -42,8 +42,11 @@ func InitRouter() *gin.Engine {
 	videoApi := r.Group("/video")
 	videoApi.Use(auth.GetAuth)
 	{
-		videoApi.POST("/create", videoManagement.CreateVideo) //上传视频
-		videoApi.GET("/query", videoManagement.QueryVideo)    //上传视频
+		videoApi.POST("/create", videoManagement.CreateVideo)
+		videoApi.GET("/query", videoManagement.QueryVideo)
+		videoApi.GET("/query/:id", videoManagement.FindVideo)
+		videoApi.PUT("/update/:id", videoManagement.UpdateVideo)
+		videoApi.DELETE("/delete/:id", videoManagement.DeleteVideo)
 	}
 
 	testApi := r.Group("/test")
@@ -51,7 +54,7 @@ func InitRouter() *gin.Engine {
 	{
 		testApi.GET("/:id", func(c *gin.Context) {
 			id := c.Param("id")
-			value, _ := c.Get("userId")
+			value, _ := c.Get("user")
 			fmt.Println("value", value)
 			c.JSON(http.StatusOK, gin.H{
 				"status": 200,

@@ -52,8 +52,9 @@ func QueryVideo(c *gin.Context) {
 	limit := c.Request.URL.Query().Get("limit")
 	offset := c.Request.URL.Query().Get("offset")
 	condition := c.Request.URL.Query().Get("condition")
+	fmt.Println("condition", condition)
 	video := video.Video{}
-	value, err := video.QueryVideos(condition,limit, offset)
+	value, err := video.QueryVideos(condition, limit, offset)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"status": 400,
@@ -66,5 +67,97 @@ func QueryVideo(c *gin.Context) {
 		"status": 200,
 		"error":  nil,
 		"data":   value,
+	})
+}
+
+func FindVideo(c *gin.Context) {
+	videoId := c.Param("id")
+	if videoId == "" {
+		c.JSON(http.StatusOK, gin.H{
+			"status": 400,
+			"data":   "没有更新id",
+		})
+		return
+	}
+	video := video.Video{}
+	value, err := video.FindVideo(videoId)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"status": 400,
+			"error":  err,
+			"data":   "查询失败",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"error":  nil,
+		"data":   value,
+	})
+}
+
+func UpdateVideo(c *gin.Context) {
+	videoId := c.Param("id")
+	if videoId == "" {
+		c.JSON(http.StatusOK, gin.H{
+			"status": 400,
+			"data":   "没有更新id",
+		})
+		return
+	}
+	video := video.Video{}
+	value, err := ioutil.ReadAll(c.Request.Body)
+	if err != nil {
+		fmt.Println("video反序列化是失败", err)
+		return
+	}
+	json.Unmarshal(value, &video)
+	fmt.Println("video:", video)
+	err = video.UpdateVideo(videoId)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"status": 400,
+			"error":  err,
+			"data":   "更新失败",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"error":  nil,
+		"data":   "更新成功",
+	})
+}
+
+func DeleteVideo(c *gin.Context) {
+	videoId := c.Param("id")
+	if videoId == "" {
+		c.JSON(http.StatusOK, gin.H{
+			"status": 400,
+			"data":   "没有更新id",
+		})
+		return
+	}
+	video := video.Video{}
+	value, err := ioutil.ReadAll(c.Request.Body)
+	if err != nil {
+		fmt.Println("video反序列化是失败", err)
+		return
+	}
+	json.Unmarshal(value, &video)
+	fmt.Println("video:", video)
+	err = video.DeleteVideo(videoId)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"status": 400,
+			"error":  err,
+			"data":   "删除失败",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"error":  nil,
+		"data":   "删除成功",
 	})
 }

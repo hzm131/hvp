@@ -14,14 +14,14 @@ import (
 // 登录
 func Login(c *gin.Context) {
 	validator := govalidators.New()
-	user := users.Users{}
+	users := users.Users{}
 	value, err := ioutil.ReadAll(c.Request.Body)
 	fmt.Println("value", value)
 	if err != nil {
 		return
 	}
-	json.Unmarshal(value, &user)
-	errList := validator.Validate(&user)
+	json.Unmarshal(value, &users)
+	errList := validator.Validate(&users)
 	if errList != nil {
 		for _, err := range errList {
 			c.JSON(http.StatusOK, gin.H{
@@ -33,17 +33,17 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	id, err := user.FindId()
-	if id == 0 || err != nil {
+	user, err := users.FindId()
+	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"status": 400,
 			"error":  err,
-			"data":   "用户不存在",
+			"data":   "用户名或密码有问题",
 		})
 		return
 	}
 
-	str, err := jwt.CreateJWT(id)
+	str, err := jwt.CreateJWT(user)
 	if err != nil {
 		fmt.Errorf("生成jwt失败")
 		return
@@ -52,19 +52,19 @@ func Login(c *gin.Context) {
 		"status": 200,
 		"error":  nil,
 		"data":   str,
-		"userId": id,
+		"user":   user,
 	})
 }
 
 //注册
 func Registered(c *gin.Context) {
-	user := users.Users{}
+	users := users.Users{}
 	value, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		return
 	}
-	json.Unmarshal(value, &user)
-	errList := govalidators.New().Validate(&user)
+	json.Unmarshal(value, &users)
+	errList := govalidators.New().Validate(&users)
 	if errList != nil {
 		for _, err := range errList {
 			c.JSON(http.StatusOK, gin.H{
@@ -75,22 +75,22 @@ func Registered(c *gin.Context) {
 		}
 		return
 	}
-	id, err := user.CreateData()
-	if id == -1 {
+	id, user, err := users.CreateData()
+	if id != 0 {
 		c.JSON(http.StatusOK, gin.H{
 			"status": 400,
 			"error":  "用户名已经存在",
 		})
 		return
 	}
-	if err != nil || id == 0 {
+	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"status": 400,
 			"error":  "创建失败",
 		})
 		return
 	}
-	str, err := jwt.CreateJWT(id) //返回完整token
+	str, err := jwt.CreateJWT(user) //返回完整token
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"status": 400,
@@ -104,6 +104,6 @@ func Registered(c *gin.Context) {
 		"status": 200,
 		"error":  nil,
 		"data":   str,
-		"userId": id,
+		"user":   user,
 	})
 }

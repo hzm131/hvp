@@ -15,14 +15,14 @@ var Db *gorm.DB
 
 func init() {
 	var err error
-	Db, err = gorm.Open("mysql", "root:h891453@tcp(127.0.0.1:3306)/hzm?charset=utf8&parseTime=True&loc=Local")
+	Db, err = gorm.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/hzm?charset=utf8&parseTime=True&loc=Local")
 	if err != nil {
 		panic(err)
 	}
 
 	Db.SingularTable(true)
 	//创建表 自动迁移
-	Db.AutoMigrate(&users.Users{}, &video.Video{}, &video.Comment{}, &video.Reply{},&video.ImageSrc{},&video.VideoSrc{})
+	Db.AutoMigrate(&users.Users{}, &video.Video{}, &video.Comment{}, &video.Reply{}, &video.ImageSrc{}, &video.VideoSrc{})
 
 	servser_model.ModelInit(Db)
 }

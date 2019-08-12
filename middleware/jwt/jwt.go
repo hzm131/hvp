@@ -1,6 +1,7 @@
 package jwt
 
 import (
+	"com/models/servser_model/users"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -93,7 +94,7 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjI5NTg5MTA4MDYsImlzcyI6InRlc3QiLCJ
 var mySigningKey = []byte("hzwy23")
 
 //创建令牌
-func CreateJWT(id int) (ss string, err error) {
+func CreateJWT(user users.Users) (ss string, err error) {
 
 	/*// 创建声明 就是设置token的一些东西
 	claims := &jwt.StandardClaims{
@@ -103,9 +104,9 @@ func CreateJWT(id int) (ss string, err error) {
 		Id:        string(id),
 	}*/
 	claims := jwt.MapClaims{
-		"userId": id,
-		"exp":    int64(time.Now().Unix() + 1000),
-		"iss":    "hzm",
+		"user": user,
+		"exp":  int64(time.Now().Unix() + 1000),
+		"iss":  "hzm",
 	}
 
 	//创建签名 第一个参数是算法 第二个参数是配置
@@ -140,8 +141,8 @@ func ParseToken(c *gin.Context, str string) {
 			}
 			fmt.Println(claims)
 			fmt.Println(&claims)
-			userId := claims["userId"]
-			c.Set("userId", userId)
+			user := claims["user"]
+			c.Set("user", user)
 			c.Next()
 		} else {
 			c.JSON(http.StatusOK, gin.H{

@@ -96,24 +96,50 @@ func (this *Video) CreatedVideo() (int, error) {
 
 type TotalVideo struct {
 	Videos []Video `json:"videos"`
-	Total int `json:"total"`
+	Total  int     `json:"total"`
 }
 
-
-func (this *Video) QueryVideos(condition string,limit string, offset string) ( totalVideo TotalVideo, err error) {
-	cond := "%"+condition+"%"
-	fmt.Println("cond",cond)
+func (this *Video) QueryVideos(condition string, limit string, offset string) (totalVideo TotalVideo, err error) {
+	cond := "%" + condition + "%"
+	fmt.Println("cond", cond)
 	if limit == "" {
 		limit = "10"
 	}
 	if offset == "" {
 		offset = "0"
 	}
-	count := servser_model.Db.Raw("select * from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where concat(name) like ?",&cond).Scan(&totalVideo.Videos).RowsAffected
+	count := servser_model.Db.Raw("select * from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where concat(name,origin) like ?", &cond).Scan(&totalVideo.Videos).RowsAffected
 	totalVideo.Total = int(count)
 
-	query := servser_model.Db.Raw("select * from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where concat(name) like ? limit ? offset ?",&cond,&limit, &offset).Scan(&totalVideo.Videos)
-	if err = query.Error; err != nil{
+	query := servser_model.Db.Raw("select * from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where concat(name,origin) like ? limit ? offset ?", &cond, &limit, &offset).Scan(&totalVideo.Videos)
+	if err = query.Error; err != nil {
+		return
+	}
+	return
+}
+
+func (this *Video) FindVideo(Id string) (video Video, err error) {
+	query := servser_model.Db.Raw("select * from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where video.id = ?", &Id).Scan(&video)
+	if err = query.Error; err != nil {
+		fmt.Println("查询失败")
+		return
+	}
+	return
+}
+
+func (this *Video) UpdateVideo(Id string) (err error) {
+	fmt.Println("id:", Id)
+	update := servser_model.Db.Exec("update video set name = ?, origin = ?, duration = ?, language = ?, years = ?, score = ?, introduction = ?, category = ?, video_src_id = ?, image_src_id = ? where id = ?", this.Name, this.Origin,
+		this.Duration, this.Language, this.Years, this.Score, this.Introduction, this.Category, this.VideoSrcId, this.ImageSrcId, &Id)
+	if err = update.Error; err != nil {
+		return
+	}
+	return
+}
+
+func (this *Video) DeleteVideo(Id string) (err error) {
+	delete := servser_model.Db.Exec("delete video,video_src,image_src from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where video.id = ?", &Id)
+	if err = delete.Error; err != nil {
 		return
 	}
 	return
