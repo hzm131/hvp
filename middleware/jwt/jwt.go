@@ -134,7 +134,7 @@ func ParseToken(c *gin.Context, str string) {
 			if !ok {
 				fmt.Println("HS256的token解析错误，err:", err)
 				c.JSON(http.StatusOK, gin.H{
-					"status": 400,
+					"status": 401,
 					"error":  "token解析错误",
 				})
 				return
@@ -146,14 +146,14 @@ func ParseToken(c *gin.Context, str string) {
 			c.Next()
 		} else {
 			c.JSON(http.StatusOK, gin.H{
-				"status": 400,
+				"status": 401,
 				"data":   "token无效",
 			})
 			c.Abort()
 		}
 	} else {
 		c.JSON(http.StatusOK, gin.H{
-			"status": 403,
+			"status": 401,
 			"data":   "未经授权访问此资源",
 		})
 		c.Abort()

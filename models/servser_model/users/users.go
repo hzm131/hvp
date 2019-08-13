@@ -3,13 +3,12 @@ package users
 import (
 	"com/models/servser_model"
 	"fmt"
-	"github.com/jinzhu/gorm"
 )
 
 type Users struct {
-	gorm.Model
-	UserName string `gorm:"column:username"validate:"required||string"`
-	PassWord string `gorm:"column:password"validate:"required||string"`
+	servser_model.Model
+	UserName string `gorm:"column:username"json:"username"validate:"required||string"`
+	PassWord string `gorm:"column:password"json:"password"validate:"required||string"`
 }
 
 func (this *Users) FindId() (Users, error) {

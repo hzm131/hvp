@@ -4,11 +4,10 @@ import (
 	"com/models/servser_model"
 	"com/models/servser_model/users"
 	"fmt"
-	"github.com/jinzhu/gorm"
 )
 
 type Video struct {
-	gorm.Model
+	servser_model.Model
 	Name         string  `gorm:"column:name"json:"name"` //片名
 	Pid          int     `gorm:"column:pid"json:"pid"`
 	Origin       string  `gorm:"column:origin"json:"origin"`             //产地
@@ -27,19 +26,19 @@ type Video struct {
 
 //上传视频封面
 type ImageSrc struct {
-	gorm.Model
+	servser_model.Model
 	SrcPath string `gorm:"column:src_path"json:"src_path"`
 }
 
 // 上传视频路径
 type VideoSrc struct {
-	gorm.Model
+	servser_model.Model
 	SrcPath string `gorm:"column:src_path"json:"src_path"`
 }
 
 //评论表
 type Comment struct {
-	gorm.Model
+	servser_model.Model
 	VideoId int         `gorm:"column:video_id"json:"video_id"` //视频id
 	Video   Video       `gorm:"ForeignKey:VideoId:AssociationForeignKey:ID"`
 	Content string      `gorm:"column:content"json:"content"` //评论内容
@@ -49,7 +48,7 @@ type Comment struct {
 
 //回复表
 type Reply struct {
-	gorm.Model
+	servser_model.Model
 	CommentId int     `gorm:"column:comment_id"json:"comment_id"` //通过评论id可以知道自己属于哪条评论
 	Comment   Comment `gorm:"ForeignKey:CommentId:AssociationForeignKey:ID"`
 	ReplyId   int     `gorm:"column:reply_id"json:"reply_id"` //回复目标id
@@ -138,6 +137,7 @@ func (this *Video) UpdateVideo(Id string) (err error) {
 }
 
 func (this *Video) DeleteVideo(Id string) (err error) {
+	fmt.Println("Id", Id)
 	delete := servser_model.Db.Exec("delete video,video_src,image_src from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where video.id = ?", &Id)
 	if err = delete.Error; err != nil {
 		return

@@ -1,9 +1,9 @@
 package frontend_model
 
-import "github.com/jinzhu/gorm"
+import "com/models/servser_model"
 
 type BUsers struct {
-	gorm.Model
+	servser_model.Model
 	UserName string `gorm:"column:username"validate:"required||string"`
 	PassWord string `gorm:"column:password"validate:"required||string"`
 }

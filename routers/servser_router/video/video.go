@@ -134,19 +134,13 @@ func DeleteVideo(c *gin.Context) {
 	if videoId == "" {
 		c.JSON(http.StatusOK, gin.H{
 			"status": 400,
-			"data":   "没有更新id",
+			"data":   "没有传id",
 		})
 		return
 	}
 	video := video.Video{}
-	value, err := ioutil.ReadAll(c.Request.Body)
-	if err != nil {
-		fmt.Println("video反序列化是失败", err)
-		return
-	}
-	json.Unmarshal(value, &video)
 	fmt.Println("video:", video)
-	err = video.DeleteVideo(videoId)
+	err := video.DeleteVideo(videoId)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"status": 400,
