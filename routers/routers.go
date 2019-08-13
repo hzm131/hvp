@@ -3,6 +3,7 @@ package routers
 import (
 	_ "com/models"
 	"com/routers/auth"
+	"com/routers/servser_router/comment"
 	"com/routers/servser_router/upload"
 	"com/routers/servser_router/user"
 	videoManagement "com/routers/servser_router/video"
@@ -48,6 +49,14 @@ func InitRouter() *gin.Engine {
 		videoApi.PUT("/update/:id", videoManagement.UpdateVideo)
 		videoApi.DELETE("/delete/:id", videoManagement.DeleteVideo)
 	}
+
+	commentApi := r.Group("/comment")
+	videoApi.Use(auth.GetAuth)
+	{
+		commentApi.GET("/video/:id", commentManagement.QueryComment)
+		commentApi.DELETE("/:id", commentManagement.DeleteComment)
+	}
+
 
 	testApi := r.Group("/test")
 	testApi.Use(auth.GetAuth)

@@ -2,6 +2,7 @@ package models
 
 import (
 	"com/models/servser_model"
+	"com/models/servser_model/comment"
 	"com/models/servser_model/users"
 	"com/models/servser_model/video"
 	_ "github.com/go-sql-driver/mysql"
@@ -22,7 +23,7 @@ func init() {
 
 	Db.SingularTable(true)
 	//创建表 自动迁移
-	Db.AutoMigrate(&users.Users{}, &video.Video{}, &video.Comment{}, &video.Reply{}, &video.ImageSrc{}, &video.VideoSrc{})
+	Db.AutoMigrate(&users.Users{}, &video.Video{}, &comment.Comment{}, &comment.Reply{}, &video.ImageSrc{}, &video.VideoSrc{})
 
 	servser_model.ModelInit(Db)
 }

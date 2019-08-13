@@ -52,9 +52,10 @@ func QueryVideo(c *gin.Context) {
 	limit := c.Request.URL.Query().Get("limit")
 	offset := c.Request.URL.Query().Get("offset")
 	condition := c.Request.URL.Query().Get("condition")
+	orderBy := c.Request.URL.Query().Get("order_by")
 	fmt.Println("condition", condition)
 	video := video.Video{}
-	value, err := video.QueryVideos(condition, limit, offset)
+	value, err := video.QueryVideos(condition,orderBy, limit, offset)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"status": 400,

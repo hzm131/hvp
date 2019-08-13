@@ -2,7 +2,6 @@ package video
 
 import (
 	"com/models/servser_model"
-	"com/models/servser_model/users"
 	"fmt"
 )
 
@@ -19,9 +18,9 @@ type Video struct {
 	Category     string  `gorm:"column:category"json:"category"`         //类别
 
 	VideoSrcId int      `gorm:"column:video_src_id;"json:"video_src_id"validate:"required||integer"` //视频路径
-	VideoSrc   VideoSrc `gorm:"ForeignKey:VideoSrcId:AssociationForeignKey:ID"`
+	VideoSrc   VideoSrc `gorm:"ForeignKey:VideoSrcId:AssociationForeignKey:ID"json:"video_src"`
 	ImageSrcId int      `gorm:"column:image_src_id;"json:"image_src_id"validate:"required||integer"` //封面路径
-	ImageSrc   ImageSrc `gorm:"ForeignKey:ImageSrcId:AssociationForeignKey:ID"`
+	ImageSrc   ImageSrc `gorm:"ForeignKey:ImageSrcId:AssociationForeignKey:ID"json:"image_src"`
 }
 
 //上传视频封面
@@ -36,25 +35,6 @@ type VideoSrc struct {
 	SrcPath string `gorm:"column:src_path"json:"src_path"`
 }
 
-//评论表
-type Comment struct {
-	servser_model.Model
-	VideoId int         `gorm:"column:video_id"json:"video_id"` //视频id
-	Video   Video       `gorm:"ForeignKey:VideoId:AssociationForeignKey:ID"`
-	Content string      `gorm:"column:content"json:"content"` //评论内容
-	UserId  int         `gorm:"column:user_id"json:"user_id"` //评论人的id
-	User    users.Users `gorm:"ForeignKey:UserId:AssociationForeignKey:ID"`
-}
-
-//回复表
-type Reply struct {
-	servser_model.Model
-	CommentId int     `gorm:"column:comment_id"json:"comment_id"` //通过评论id可以知道自己属于哪条评论
-	Comment   Comment `gorm:"ForeignKey:CommentId:AssociationForeignKey:ID"`
-	ReplyId   int     `gorm:"column:reply_id"json:"reply_id"` //回复目标id
-	Content   string  `gorm:"column:content"json:"content"`   //回复目标内容
-	UserId    int     `gorm:"column:user_id"json:"user_id"`   //回复用户id
-}
 
 func (this *VideoSrc) CreatedVideoSrc() (int, error) {
 	fmt.Printf("this", this)
@@ -98,7 +78,7 @@ type TotalVideo struct {
 	Total  int     `json:"total"`
 }
 
-func (this *Video) QueryVideos(condition string, limit string, offset string) (totalVideo TotalVideo, err error) {
+func (this *Video) QueryVideos(condition string,orderBy string, limit string, offset string) (totalVideo TotalVideo, err error) {
 	cond := "%" + condition + "%"
 	fmt.Println("cond", cond)
 	if limit == "" {
@@ -110,7 +90,7 @@ func (this *Video) QueryVideos(condition string, limit string, offset string) (t
 	count := servser_model.Db.Raw("select * from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where concat(name,origin) like ?", &cond).Scan(&totalVideo.Videos).RowsAffected
 	totalVideo.Total = int(count)
 
-	query := servser_model.Db.Raw("select * from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where concat(name,origin) like ? limit ? offset ?", &cond, &limit, &offset).Scan(&totalVideo.Videos)
+	query := servser_model.Db.Raw("select * from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where concat(name,origin) like ? order by ? Desc limit ? offset ?", &cond,&orderBy,&limit, &offset).Scan(&totalVideo.Videos)
 	if err = query.Error; err != nil {
 		return
 	}
