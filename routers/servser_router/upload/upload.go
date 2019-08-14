@@ -44,9 +44,10 @@ func UploadImage(c *gin.Context) {
 		return
 	}
 	//封面表添加
-
+	str := "http://192.168.2.219:3000/images/" + filename
 	imageSrc := video.ImageSrc{
-		SrcPath: "http://192.168.2.219:3000/images/" + filename,
+		Name:    &filename,
+		SrcPath: &str,
 	}
 	id, err := imageSrc.CreatedImageSrc()
 	if err != nil {
@@ -98,9 +99,11 @@ func UploadVideo(c *gin.Context) {
 		})
 		return
 	}
+	str := "http://127.0.0.1:3000/videos/" + filename
 	// 返回视频路径id
 	videoSrc := video.VideoSrc{
-		SrcPath: "http://127.0.0.1:3000/videos/" + filename,
+		Name:    &filename,
+		SrcPath: &str,
 	}
 	id, err := videoSrc.CreatedVideoSrc()
 	if err != nil {
@@ -114,6 +117,6 @@ func UploadVideo(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"status": 200,
 		"error":  nil,
-		"id":     id,
+		"data":   id,
 	})
 }

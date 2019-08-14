@@ -5,9 +5,11 @@ import (
 	"com/routers/auth"
 	"com/routers/cors"
 	"com/routers/servser_router/comment"
+	"com/routers/servser_router/image_src"
 	"com/routers/servser_router/upload"
 	"com/routers/servser_router/user"
 	videoManagement "com/routers/servser_router/video"
+	"com/routers/servser_router/video_src"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -51,6 +53,9 @@ func InitRouter() *gin.Engine {
 		videoApi.GET("/query/:id", videoManagement.FindVideo)
 		videoApi.PUT("/update/:id", videoManagement.UpdateVideo)
 		videoApi.DELETE("/delete/:id", videoManagement.DeleteVideo)
+
+		videoApi.DELETE("/image/delete/:id", image_src.DeleteImageSrc)
+		videoApi.DELETE("/video/delete/:id", video_src.DeleteImageSrc)
 	}
 
 	commentApi := r.Group("/comment")

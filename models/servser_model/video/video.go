@@ -3,6 +3,7 @@ package video
 import (
 	"com/models/servser_model"
 	"fmt"
+	"os"
 )
 
 type Video struct {
@@ -13,7 +14,7 @@ type Video struct {
 	Duration     *string  `gorm:"column:duration"json:"duration"`         //时长
 	Language     *string  `gorm:"column:language"json:"language"`         //语种
 	Years        *string  `gorm:"column:years"json:"years"`               //年份
-	Score        *float32 `gorm:"column:score"json:"score"`               //评分
+	Score        *float32 `gorm:"column:score;type:float;"json:"score"`   //评分
 	Introduction *string  `gorm:"column:introduction"json:"introduction"` //简介
 	Category     *string  `gorm:"column:category"json:"category"`         //类别
 
@@ -26,13 +27,49 @@ type Video struct {
 //上传视频封面
 type ImageSrc struct {
 	servser_model.Model
-	SrcPath string `gorm:"column:src_path"json:"src_path"`
+	Name    *string `gorm:"column:name"json:"name"`
+	SrcPath *string `gorm:"column:src_path"json:"src_path"`
+}
+
+func (this *ImageSrc) DeleteImageSrc(id string) (err error) {
+	image_src := ImageSrc{}
+	query := servser_model.Db.Raw("select * from image_src where id = ?", &id).Scan(&image_src)
+	if err = query.Error; err != nil {
+		return err
+	}
+	err = os.Remove("./public/upload/images/" + *image_src.Name)
+	if err != nil {
+		return
+	}
+	delete := servser_model.Db.Exec("delete from image_src where id = ?", &id)
+	if err = delete.Error; err != nil {
+		return err
+	}
+	return
 }
 
 // 上传视频路径
 type VideoSrc struct {
 	servser_model.Model
-	SrcPath string `gorm:"column:src_path"json:"src_path"`
+	Name    *string `gorm:"column:name"json:"name"`
+	SrcPath *string `gorm:"column:src_path"json:"src_path"`
+}
+
+func (this *VideoSrc) DeleteVideoSrc(id string) (err error) {
+	video_src := VideoSrc{}
+	query := servser_model.Db.Raw("select * from video_src where id = ?", &id).Scan(&video_src)
+	if err = query.Error; err != nil {
+		return err
+	}
+	err = os.Remove("./public/upload/videos/" + *video_src.Name)
+	if err != nil {
+		return
+	}
+	delete := servser_model.Db.Exec("delete from video_src where id = ?", &id)
+	if err = delete.Error; err != nil {
+		return err
+	}
+	return
 }
 
 func (this *VideoSrc) CreatedVideoSrc() (int, error) {
@@ -86,19 +123,19 @@ func (this *Video) QueryVideos(condition string, orderBy string, limit string, o
 	if offset == "" {
 		offset = "0"
 	}
-	count := servser_model.Db.Raw("select * from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where concat(name,origin) like ?", &cond).Scan(&totalVideo.Videos).RowsAffected
+	count := servser_model.Db.Raw("select * from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where concat(video.name) like ?", &cond).Scan(&totalVideo.Videos).RowsAffected
 	totalVideo.Total = int(count)
 	totalVideo.Videos = nil
-	rows, err := servser_model.Db.Raw("select video.id,name,pid,origin,duration,language,years,score,introduction,category,video_src_id,image_src_id,image_src.id,image_src.src_path,video_src.id,video_src.src_path from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where concat(name,origin) like ? order by ? Desc limit ? offset ?", &cond, &orderBy, &limit, &offset).Rows()
+	rows, err := servser_model.Db.Raw("select video.id,video.name,pid,origin,duration,language,years,score,introduction,category,video_src_id,image_src_id,image_src.id,image_src.name,image_src.src_path,video_src.id,video_src.name,video_src.src_path from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where concat(video.name) like ? order by ? Desc limit ? offset ?", &cond, &orderBy, &limit, &offset).Rows()
 	if err != nil {
 		return
 	}
 	defer rows.Close()
 	for rows.Next() {
 		video := Video{}
-		err = rows.Scan(&video.ID, &video.Name, &video.Pid, &video.Origin, &video.Duration, &video.Language, &video.Years, &video.Score, &video.Introduction, &video.Category, &video.VideoSrcId, &video.ImageSrcId, &video.ImageSrc.ID, &video.ImageSrc.SrcPath, &video.VideoSrc.ID, &video.VideoSrc.SrcPath)
+		err = rows.Scan(&video.ID, &video.Name, &video.Pid, &video.Origin, &video.Duration, &video.Language, &video.Years, &video.Score, &video.Introduction, &video.Category, &video.VideoSrcId, &video.ImageSrcId, &video.ImageSrc.ID, &video.ImageSrc.Name, &video.ImageSrc.SrcPath, &video.VideoSrc.ID, &video.VideoSrc.Name, &video.VideoSrc.SrcPath)
 		if err != nil {
-			fmt.Println("errrrrrrr", err)
+			return totalVideo, err
 		}
 		totalVideo.Videos = append(totalVideo.Videos, video)
 	}
