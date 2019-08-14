@@ -7,16 +7,13 @@ import (
 )
 
 func QueryComment(c *gin.Context) {
-	videoId := c.Param("id")
-	if videoId == "" {
-		c.JSON(http.StatusOK, gin.H{
-			"status": 400,
-			"data":   "没有id怎么查",
-		})
-		return
-	}
+	limit := c.Request.URL.Query().Get("limit")
+	offset := c.Request.URL.Query().Get("offset")
+	condition := c.Request.URL.Query().Get("condition")
+	orderBy := c.Request.URL.Query().Get("order_by")
+
 	comment := comment.Comment{}
-	value,err := comment.QueryComment(videoId)
+	value,err := comment.QueryComment(condition, orderBy, limit, offset)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"status": 400,
@@ -41,8 +38,8 @@ func DeleteComment(c *gin.Context){
 		return
 	}
 	comment := comment.Comment{}
-	bool,err := comment.DeleteComment(commentId)
-	if bool == false || err != nil{
+	err := comment.DeleteComment(commentId)
+	if err != nil{
 		c.JSON(http.StatusOK, gin.H{
 			"status": 400,
 			"error":err,

@@ -4,7 +4,8 @@ com.exe
 
 /videos
 /images
-/upload
+./upload/images/
+./upload/videos/
 .mp4
 .wmv
 .jpg

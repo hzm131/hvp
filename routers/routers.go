@@ -61,7 +61,7 @@ func InitRouter() *gin.Engine {
 	commentApi := r.Group("/comment")
 	videoApi.Use(auth.GetAuth)
 	{
-		commentApi.GET("/video/:id", commentManagement.QueryComment)
+		commentApi.GET("/query", commentManagement.QueryComment)
 		commentApi.DELETE("/:id", commentManagement.DeleteComment)
 	}
 

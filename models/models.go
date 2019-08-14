@@ -1,6 +1,7 @@
 package models
 
 import (
+	"com/models/frontend_model"
 	"com/models/servser_model"
 	"com/models/servser_model/comment"
 	"com/models/servser_model/users"
@@ -23,7 +24,14 @@ func init() {
 
 	Db.SingularTable(true)
 	//创建表 自动迁移
-	Db.AutoMigrate(&users.Users{}, &video.Video{}, &comment.Comment{}, &comment.Reply{}, &video.ImageSrc{}, &video.VideoSrc{})
+	Db.AutoMigrate(&users.Users{},
+	&video.Video{},
+	&comment.Comment{},
+	&comment.Reply{},
+	&video.ImageSrc{},
+	&video.VideoSrc{},
+	&frontend_model.GeneralUser{},
+	&frontend_model.Avatar{})
 
 	servser_model.ModelInit(Db)
 }
