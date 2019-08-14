@@ -2,6 +2,7 @@ package upload
 
 import (
 	"com/models/servser_model/video"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"io"
 	"net/http"
@@ -9,6 +10,7 @@ import (
 )
 
 func UploadImage(c *gin.Context) {
+	fmt.Println("进来")
 	file, header, err := c.Request.FormFile("file")
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{

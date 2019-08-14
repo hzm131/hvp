@@ -3,6 +3,7 @@ package routers
 import (
 	_ "com/models"
 	"com/routers/auth"
+	"com/routers/cors"
 	"com/routers/servser_router/comment"
 	"com/routers/servser_router/upload"
 	"com/routers/servser_router/user"
@@ -18,6 +19,8 @@ func InitRouter() *gin.Engine {
 	r.Use(gin.Logger())
 
 	r.Use(gin.Recovery())
+
+	r.Use(cors.Cors())
 
 	//静态文件服务 提供图片路径
 	r.Static("/images", "./public/upload/images")
@@ -56,7 +59,6 @@ func InitRouter() *gin.Engine {
 		commentApi.GET("/video/:id", commentManagement.QueryComment)
 		commentApi.DELETE("/:id", commentManagement.DeleteComment)
 	}
-
 
 	testApi := r.Group("/test")
 	testApi.Use(auth.GetAuth)
