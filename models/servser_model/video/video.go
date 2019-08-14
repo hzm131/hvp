@@ -18,9 +18,9 @@ type Video struct {
 	Category     string  `gorm:"column:category"json:"category"`         //类别
 
 	VideoSrcId int      `gorm:"column:video_src_id;"json:"video_src_id"validate:"required||integer"` //视频路径
-	VideoSrc   VideoSrc `gorm:"ForeignKey:VideoSrcId:AssociationForeignKey:ID"json:"video_src"`
+	VideoSrc   VideoSrc `gorm:"ForeignKey:VideoSrcI;AssociationForeignKey:ID"json:"video_src"`
 	ImageSrcId int      `gorm:"column:image_src_id;"json:"image_src_id"validate:"required||integer"` //封面路径
-	ImageSrc   ImageSrc `gorm:"ForeignKey:ImageSrcId:AssociationForeignKey:ID"json:"image_src"`
+	ImageSrc   ImageSrc `gorm:"ForeignKey:ImageSrcId;AssociationForeignKey:ID"json:"image_src"`
 }
 
 //上传视频封面
@@ -34,7 +34,6 @@ type VideoSrc struct {
 	servser_model.Model
 	SrcPath string `gorm:"column:src_path"json:"src_path"`
 }
-
 
 func (this *VideoSrc) CreatedVideoSrc() (int, error) {
 	fmt.Printf("this", this)
@@ -78,7 +77,7 @@ type TotalVideo struct {
 	Total  int     `json:"total"`
 }
 
-func (this *Video) QueryVideos(condition string,orderBy string, limit string, offset string) (totalVideo TotalVideo, err error) {
+func (this *Video) QueryVideos(condition string, orderBy string, limit string, offset string) (totalVideo TotalVideo, err error) {
 	cond := "%" + condition + "%"
 	fmt.Println("cond", cond)
 	if limit == "" {
@@ -90,7 +89,7 @@ func (this *Video) QueryVideos(condition string,orderBy string, limit string, of
 	count := servser_model.Db.Raw("select * from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where concat(name,origin) like ?", &cond).Scan(&totalVideo.Videos).RowsAffected
 	totalVideo.Total = int(count)
 
-	query := servser_model.Db.Raw("select * from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where concat(name,origin) like ? order by ? Desc limit ? offset ?", &cond,&orderBy,&limit, &offset).Scan(&totalVideo.Videos)
+	query := servser_model.Db.Raw("select * from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where concat(name,origin) like ? order by ? Desc limit ? offset ?", &cond, &orderBy, &limit, &offset).Scan(&totalVideo.Videos)
 	if err = query.Error; err != nil {
 		return
 	}
