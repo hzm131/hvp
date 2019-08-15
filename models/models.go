@@ -1,7 +1,7 @@
 package models
 
 import (
-	"com/models/frontend_model"
+	"com/models/frontend_model/general_user"
 	"com/models/servser_model"
 	"com/models/servser_model/comment"
 	"com/models/servser_model/users"
@@ -30,8 +30,8 @@ func init() {
 	&comment.Reply{},
 	&video.ImageSrc{},
 	&video.VideoSrc{},
-	&frontend_model.GeneralUser{},
-	&frontend_model.Avatar{})
+	&general_user.GeneralUser{},
+	&general_user.Avatar{})
 
 	servser_model.ModelInit(Db)
 }

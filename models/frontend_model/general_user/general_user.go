@@ -1,4 +1,4 @@
-package frontend_model
+package general_user
 
 import "com/models/servser_model"
 
@@ -11,6 +11,8 @@ type GeneralUser struct {
 	Avatar Avatar `gorm:"ForeignKey:AvatarId;AssociationForeignKey:ID"json:"avatar"`
 	Address *string `gorm:"column:address"json:"address"` //地址
 	Email *string `gorm:"column:email"json:"email"`
+	Phone *string `gorm:"column:phone"json:"phone"`
+	Vip int  `gorm:"column:vip;default:0"json:"vip"`
 }
 
 type Avatar struct {
