@@ -1,11 +1,12 @@
 package routers
 
 import (
+	"com/middleware/cors"
 	_ "com/models"
 	"com/routers/auth"
-	"com/routers/cors"
 	"com/routers/servser_router/comment"
 	"com/routers/servser_router/image_src"
+	replyManagement "com/routers/servser_router/reply"
 	"com/routers/servser_router/upload"
 	"com/routers/servser_router/user"
 	videoManagement "com/routers/servser_router/video"
@@ -58,11 +59,18 @@ func InitRouter() *gin.Engine {
 		videoApi.DELETE("/video/delete/:id", video_src.DeleteImageSrc)
 	}
 
+	//评论
 	commentApi := r.Group("/comment")
 	videoApi.Use(auth.GetAuth)
 	{
 		commentApi.GET("/query", commentManagement.QueryComment)
 		commentApi.DELETE("/:id", commentManagement.DeleteComment)
+	}
+	//回复
+	replyApi := r.Group("/reply")
+	videoApi.Use(auth.GetAuth)
+	{
+		replyApi.GET("/query", replyManagement.QueryComment)
 	}
 
 	testApi := r.Group("/test")

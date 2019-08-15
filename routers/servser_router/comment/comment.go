@@ -13,22 +13,23 @@ func QueryComment(c *gin.Context) {
 	orderBy := c.Request.URL.Query().Get("order_by")
 
 	comment := comment.Comment{}
-	value,err := comment.QueryComment(condition, orderBy, limit, offset)
+	value, err := comment.QueryComment(condition, orderBy, limit, offset)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"status": 400,
-			"error": err,
-			"data": "查询失败",
+			"error":  err,
+			"data":   "查询失败",
 		})
+		return
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"status": 200,
-		"error": nil,
-		"data": value,
+		"error":  nil,
+		"data":   value,
 	})
 }
 
-func DeleteComment(c *gin.Context){
+func DeleteComment(c *gin.Context) {
 	commentId := c.Param("id")
 	if commentId == "" {
 		c.JSON(http.StatusOK, gin.H{
@@ -39,17 +40,17 @@ func DeleteComment(c *gin.Context){
 	}
 	comment := comment.Comment{}
 	err := comment.DeleteComment(commentId)
-	if err != nil{
+	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"status": 400,
-			"error":err,
+			"error":  err,
 			"data":   "删除失败",
 		})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"status": 200,
-		"error":nil,
+		"error":  nil,
 		"data":   "删除成功",
 	})
 }

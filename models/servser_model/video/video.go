@@ -23,6 +23,7 @@ type Video struct {
 	ImageSrcId int      `gorm:"column:image_src_id;not null"json:"image_src_id"validate:"required||integer"` //封面路径
 	ImageSrc   ImageSrc `gorm:"ForeignKey:ImageSrcId;AssociationForeignKey:ID"json:"image_src"`
 
+	Count *int `gorm:"column:count"json:"count"` //播放量
 
 }
 
@@ -125,7 +126,7 @@ func (this *Video) QueryVideos(condition string, orderBy string, limit string, o
 	if offset == "" {
 		offset = "0"
 	}
-	count := servser_model.Db.Raw("select * from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where concat(video.name) like ? order by ? Desc", &cond,&orderBy).Scan(&totalVideo.Videos).RowsAffected
+	count := servser_model.Db.Raw("select * from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where concat(video.name) like ? order by ? Desc", &cond, &orderBy).Scan(&totalVideo.Videos).RowsAffected
 	totalVideo.Total = int(count)
 	totalVideo.Videos = nil
 	rows, err := servser_model.Db.Raw("select video.id,video.name,pid,origin,duration,language,years,score,introduction,category,video_src_id,image_src_id,image_src.id,image_src.name,image_src.src_path,video_src.id,video_src.name,video_src.src_path from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where concat(video.name) like ? order by ? Desc limit ? offset ?", &cond, &orderBy, &limit, &offset).Rows()
