@@ -1,6 +1,7 @@
 package jwt
 
 import (
+	"com/models/frontend_model/general_user"
 	"com/models/servser_model/users"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
@@ -127,6 +128,68 @@ func ParseToken(c *gin.Context, str string) {
 	//解析，验证并返回令牌,如果token 信息parse后与签名信息不一致,则会爆出异常.
 	token, err := jwt.Parse(str, func(*jwt.Token) (interface{}, error) {
 		return mySigningKey, nil
+	})
+	if err == nil {
+		if token.Valid {
+			claims, ok := token.Claims.(jwt.MapClaims)
+			if !ok {
+				fmt.Println("HS256的token解析错误，err:", err)
+				c.JSON(http.StatusOK, gin.H{
+					"status": 401,
+					"error":  "token解析错误",
+				})
+				return
+			}
+			fmt.Println(claims)
+			fmt.Println(&claims)
+			user := claims["user"]
+			c.Set("user", user)
+			c.Next()
+		} else {
+			c.JSON(http.StatusOK, gin.H{
+				"status": 401,
+				"data":   "token无效",
+			})
+			c.Abort()
+		}
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"status": 401,
+			"data":   "未经授权访问此资源",
+		})
+		c.Abort()
+	}
+}
+
+var SigningKey = []byte("hzm131")
+
+//创建令牌
+func CreateuUserJWT(user general_user.GeneralUser) (ss string, err error) {
+
+	claims := jwt.MapClaims{
+		"user": user,
+		"exp":  int64(time.Now().Unix() + 1000),
+		"iss":  "hzm",
+	}
+
+	//创建签名 第一个参数是算法 第二个参数是配置
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	//获取完整的签名令牌
+	ss, err = token.SignedString(SigningKey)
+	if err != nil {
+		fmt.Errorf("签名失败")
+		return
+	}
+
+	return
+
+}
+
+//解析令牌
+func ParseUserToken(c *gin.Context, str string) {
+	//解析，验证并返回令牌,如果token 信息parse后与签名信息不一致,则会爆出异常.
+	token, err := jwt.Parse(str, func(*jwt.Token) (interface{}, error) {
+		return SigningKey, nil
 	})
 	if err == nil {
 		if token.Valid {

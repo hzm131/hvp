@@ -4,6 +4,7 @@ import (
 	"com/middleware/cors"
 	_ "com/models"
 	"com/routers/auth"
+	"com/routers/frontend_router/general_user"
 	"com/routers/servser_router/comment"
 	"com/routers/servser_router/image_src"
 	replyManagement "com/routers/servser_router/reply"
@@ -72,6 +73,22 @@ func InitRouter() *gin.Engine {
 	{
 		replyApi.GET("/query", replyManagement.QueryComment)
 	}
+
+
+
+	//网站接口
+	generalUser := r.Group("/general_user")
+	{
+		generalUser.POST("/login",general_user.Login)
+		generalUser.POST("/registered",general_user.Registered)
+	}
+	generalVideo := r.Group("/general_video")
+	generalVideo.Use(auth.ParseAuth)
+	{
+		generalVideo.GET("/query", videoManagement.QueryVideo)
+	}
+
+
 
 	testApi := r.Group("/test")
 	testApi.Use(auth.GetAuth)
