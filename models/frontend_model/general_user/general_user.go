@@ -16,7 +16,7 @@ type GeneralUser struct {
 	Email *string `gorm:"column:email"json:"email"`
 	Phone *string `gorm:"column:phone"json:"phone"`
 	Vip *int  `gorm:"column:vip;default:0"json:"vip"`
-	Integral *int `gorm:"column:integral;default:0"json:"integral"` //积分
+	XiaoHeCurrency *int `gorm:"column:xiao_he_currency;default:0"json:"xiao_he_currency"` //萧何币
 }
 
 type Avatar struct {
