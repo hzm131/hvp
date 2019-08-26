@@ -100,7 +100,7 @@ func InitRouter() *gin.Engine {
 			c.JSON(http.StatusOK, gin.H{
 				"status": 200,
 				"error":  nil,
-				"data":   "徐倩雯。。。",
+				"data":   "。。。",
 				"id":     id,
 			})
 		})

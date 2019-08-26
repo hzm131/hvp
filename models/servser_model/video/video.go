@@ -23,6 +23,9 @@ type Video struct {
 	ImageSrcId int      `gorm:"column:image_src_id;not null"json:"image_src_id"validate:"required||integer"` //封面路径
 	ImageSrc   ImageSrc `gorm:"ForeignKey:ImageSrcId;AssociationForeignKey:ID"json:"image_src"`
 
+	Director string `gorm:"column:director"json:"director"` //导演
+	Actor string `gorm:"column:actor"json:"actor"`
+
 	Count *int `gorm:"column:count"json:"count"` //播放量
 
 }
@@ -129,14 +132,14 @@ func (this *Video) QueryVideos(condition string, orderBy string, limit string, o
 	count := servser_model.Db.Raw("select * from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where concat(video.name,video.origin,video.years,video.score,video.duration,video.category) like ? order by ? Desc", &cond, &orderBy).Scan(&totalVideo.Videos).RowsAffected
 	totalVideo.Total = int(count)
 	totalVideo.Videos = nil
-	rows, err := servser_model.Db.Raw("select video.id,video.name,pid,origin,duration,language,years,score,introduction,category,video_src_id,image_src_id,image_src.id,image_src.name,image_src.src_path,video_src.id,video_src.name,video_src.src_path from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where concat(video.name,video.origin,video.years,video.score,video.duration,video.category) like ? order by ? Desc limit ? offset ?", &cond, &orderBy, &limit, &offset).Rows()
+	rows, err := servser_model.Db.Raw("select video.id,video.name,pid,origin,duration,language,years,score,introduction,category,director,actor,video_src_id,image_src_id,image_src.id,image_src.name,image_src.src_path,video_src.id,video_src.name,video_src.src_path from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where concat(video.name,video.origin,video.years,video.score,video.duration,video.category) like ? order by ? Desc limit ? offset ?", &cond, &orderBy, &limit, &offset).Rows()
 	if err != nil {
 		return
 	}
 	defer rows.Close()
 	for rows.Next() {
 		video := Video{}
-		err = rows.Scan(&video.ID, &video.Name, &video.Pid, &video.Origin, &video.Duration, &video.Language, &video.Years, &video.Score, &video.Introduction, &video.Category, &video.VideoSrcId, &video.ImageSrcId, &video.ImageSrc.ID, &video.ImageSrc.Name, &video.ImageSrc.SrcPath, &video.VideoSrc.ID, &video.VideoSrc.Name, &video.VideoSrc.SrcPath)
+		err = rows.Scan(&video.ID, &video.Name, &video.Pid, &video.Origin, &video.Duration, &video.Language, &video.Years, &video.Score, &video.Introduction, &video.Category,&video.Director,&video.Actor, &video.VideoSrcId, &video.ImageSrcId, &video.ImageSrc.ID, &video.ImageSrc.Name, &video.ImageSrc.SrcPath, &video.VideoSrc.ID, &video.VideoSrc.Name, &video.VideoSrc.SrcPath)
 		if err != nil {
 			return totalVideo, err
 		}
@@ -156,8 +159,8 @@ func (this *Video) FindVideo(Id string) (video Video, err error) {
 
 func (this *Video) UpdateVideo(Id string) (err error) {
 	fmt.Println("id:", Id)
-	update := servser_model.Db.Exec("update video set name = ?, origin = ?, duration = ?, language = ?, years = ?, score = ?, introduction = ?, category = ?, video_src_id = ?, image_src_id = ? where id = ?", this.Name, this.Origin,
-		this.Duration, this.Language, this.Years, this.Score, this.Introduction, this.Category, this.VideoSrcId, this.ImageSrcId, &Id)
+	update := servser_model.Db.Exec("update video set name = ?, origin = ?, duration = ?, language = ?, years = ?, score = ?, introduction = ?, category = ?,director = ?,actor = ?, video_src_id = ?, image_src_id = ? where id = ?", this.Name, this.Origin,
+		this.Duration, this.Language, this.Years, this.Score, this.Introduction, this.Category,this.Director,this.Actor, this.VideoSrcId, this.ImageSrcId, &Id)
 	if err = update.Error; err != nil {
 		return
 	}
