@@ -66,11 +66,19 @@ func (this *Reply) QueryReply(commentId string, limit string, offset string) (to
 	defer rows.Close()
 	for rows.Next() {
 		reply := Reply{}
-		err = rows.Scan(&reply.ID, &reply.Content, &reply.ReplyId, &reply.CommentId, &reply.GeneralUserId,&reply.Awesome,&reply.CreatedAt,&reply.ReplylUser.ID,&reply.ReplylUser.UserName,&reply.ReplylUser.Avatar.ID,&reply.ReplylUser.Avatar.Src,&reply.GeneralUser.ID,&reply.GeneralUser.UserName,&reply.GeneralUser.Avatar.ID,&reply.GeneralUser.Avatar.Src )
+		err = rows.Scan(&reply.ID, &reply.Content, &reply.ReplyId, &reply.CommentId, &reply.GeneralUserId, &reply.Awesome, &reply.CreatedAt, &reply.ReplylUser.ID, &reply.ReplylUser.UserName, &reply.ReplylUser.Avatar.ID, &reply.ReplylUser.Avatar.Src, &reply.GeneralUser.ID, &reply.GeneralUser.UserName, &reply.GeneralUser.Avatar.ID, &reply.GeneralUser.Avatar.Src)
 		if err != nil {
 			return
 		}
 		totalReply.Replys = append(totalReply.Replys, reply)
+	}
+	return
+}
+
+func (this *Reply) DeleteReply(id string) (err error) {
+	delete := servser_model.Db.Exec("delete from reply where id = ?", &id)
+	if err = delete.Error; err != nil {
+		return
 	}
 	return
 }
@@ -101,14 +109,14 @@ func (this *Comment) QueryComment(condition string, orderBy string, limit string
 
 	for rows.Next() {
 		comment := Comment{}
-		rows.Scan(&comment.ID, &comment.CreatedAt,&comment.Awesome,&comment.VideoId, &comment.Video.Name, &comment.Content, &comment.GeneralUserId, &comment.GeneralUser.UserName, &comment.GeneralUser.Avatar.Src)
+		rows.Scan(&comment.ID, &comment.CreatedAt, &comment.Awesome, &comment.VideoId, &comment.Video.Name, &comment.Content, &comment.GeneralUserId, &comment.GeneralUser.UserName, &comment.GeneralUser.Avatar.Src)
 		totalComment.Comments = append(totalComment.Comments, comment)
 	}
 	return
 }
 
 func (this *Comment) DeleteComment(id string) (err error) {
-	delete := servser_model.Db.Exec("delete from comment where comment.id = ?", &id)
+	delete := servser_model.Db.Exec("delete comment,reply from comment inner join reply on comment.id = reply.comment_id where comment.id = ?", &id)
 	if err = delete.Error; err != nil {
 		return
 	}

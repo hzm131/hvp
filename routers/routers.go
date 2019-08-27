@@ -71,24 +71,23 @@ func InitRouter() *gin.Engine {
 	replyApi := r.Group("/reply")
 	videoApi.Use(auth.GetAuth)
 	{
-		replyApi.GET("/query", replyManagement.QueryComment)
+		replyApi.GET("/query", replyManagement.QueryReply)
+		replyApi.DELETE("/:id", replyManagement.DeleteReply)
 	}
 
-
+	//用户管理模块
 
 	//网站接口
 	generalUser := r.Group("/general_user")
 	{
-		generalUser.POST("/login",general_user.Login)
-		generalUser.POST("/registered",general_user.Registered)
+		generalUser.POST("/login", general_user.Login)
+		generalUser.POST("/registered", general_user.Registered)
 	}
 	generalVideo := r.Group("/general_video")
 	generalVideo.Use(auth.ParseAuth)
 	{
 		generalVideo.GET("/query", videoManagement.QueryVideo)
 	}
-
-
 
 	testApi := r.Group("/test")
 	testApi.Use(auth.GetAuth)

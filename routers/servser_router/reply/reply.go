@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func QueryComment(c *gin.Context) {
+func QueryReply(c *gin.Context) {
 	limit := c.Request.URL.Query().Get("limit")
 	offset := c.Request.URL.Query().Get("offset")
 	comment_id := c.Request.URL.Query().Get("comment_id")
@@ -32,5 +32,31 @@ func QueryComment(c *gin.Context) {
 		"status": 200,
 		"error":  nil,
 		"data":   value,
+	})
+}
+
+func DeleteReply(c *gin.Context) {
+	replyId := c.Param("id")
+	if replyId == "" {
+		c.JSON(http.StatusOK, gin.H{
+			"status": 400,
+			"data":   "没有id怎么查",
+		})
+		return
+	}
+	reply := comment.Reply{}
+	err := reply.DeleteReply(replyId)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"status": 400,
+			"error":  err,
+			"data":   "删除失败",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"error":  nil,
+		"data":   "删除成功",
 	})
 }
