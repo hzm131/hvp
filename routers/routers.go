@@ -12,7 +12,7 @@ import (
 	"com/routers/servser_router/user"
 	videoManagement "com/routers/servser_router/video"
 	"com/routers/servser_router/video_src"
-	"com/routers/wx"
+	"com/routers/wx/wxLogin"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -35,9 +35,9 @@ func InitRouter() *gin.Engine {
 
 
 	//微信登录模块
-	wxLogin := r.Group("/wx")
+	wx := r.Group("/wx")
 	{
-		wxLogin.POST("/login",wx.Login)
+		wx.POST("/login",wxLogin.Login)
 	}
 
 	//登录模块

@@ -1,11 +1,8 @@
 package models
 
 import (
-	"com/models/frontend_model/general_user"
-	"com/models/servser_model"
-	"com/models/servser_model/comment"
-	"com/models/servser_model/users"
-	"com/models/servser_model/video"
+	"com/models/wx"
+	"com/models/wx/user"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 )
@@ -24,16 +21,9 @@ func init() {
 
 	Db.SingularTable(true)
 	//创建表 自动迁移
-	Db.AutoMigrate(&users.Users{},
-	&video.Video{},
-	&comment.Comment{},
-	&comment.Reply{},
-	&video.ImageSrc{},
-	&video.VideoSrc{},
-	&general_user.GeneralUser{},
-	&general_user.Avatar{})
+	Db.AutoMigrate(&user.WxUser{})
 
-	servser_model.ModelInit(Db)
+	wx.ModelInit(Db)
 }
 
 func CloseDB() {
