@@ -40,6 +40,24 @@ func InitRouter() *gin.Engine {
 		wx.POST("/login",wxLogin.Login)
 	}
 
+
+	test := r.Group("/ttt")
+	test.Use(auth.ParseAES)
+	{
+		test.GET("/a", func(c *gin.Context) {
+			value,_ := c.Get("sessionId")
+			c.JSON(http.StatusOK, gin.H{
+				"status": 200,
+				"error":  nil,
+				"data":   value,
+			})
+		})
+	}
+
+
+
+
+
 	//登录模块
 	userApi := r.Group("/user")
 	{
