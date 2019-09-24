@@ -45,7 +45,7 @@ func InitRouter() *gin.Engine {
 	test.Use(auth.ParseAES)
 	{
 		test.GET("/a", func(c *gin.Context) {
-			value,_ := c.Get("sessionId")
+			value,_ := c.Get("openId")
 			c.JSON(http.StatusOK, gin.H{
 				"status": 200,
 				"error":  nil,

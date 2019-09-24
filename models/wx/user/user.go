@@ -43,3 +43,11 @@ func (this *WxUser) CreateData() (wxUser WxUser, err error) {
 	}
 	return
 }
+
+func (this *WxUser) FindOpenId() (wxUser WxUser, err error) {
+	query := wx.Db.Raw("select * from wx_user where openid = ?", this.OpenId).Scan(&wxUser)
+	if err = query.Error;err != nil{
+		return
+	}
+	return
+}
