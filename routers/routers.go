@@ -11,6 +11,7 @@ import (
 	"com/routers/servser_router/user"
 	videoManagement "com/routers/servser_router/video"
 	"com/routers/servser_router/video_src"
+	"com/routers/wx/uploadImg"
 	"com/routers/wx/wxLogin"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -52,10 +53,6 @@ func InitRouter() *gin.Engine {
 		})
 	}
 
-
-
-
-
 	//登录模块
 	userApi := r.Group("/user")
 	{
@@ -63,12 +60,16 @@ func InitRouter() *gin.Engine {
 		userApi.POST("/registered", user.Registered)
 	}
 
+
+
+
+
 	//上传模块
 	uploadApi := r.Group("/upload")
 	uploadApi.Use(auth.GetAuth)
 	{
 		uploadApi.POST("/video", upload.UploadVideo) //上传视频
-		uploadApi.POST("/image", upload.UploadImage) //上传视频
+		uploadApi.POST("/image", uploadImg.UploadImage) //上传图片
 	}
 
 	videoApi := r.Group("/video")

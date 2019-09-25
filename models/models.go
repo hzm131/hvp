@@ -4,6 +4,7 @@ import (
 	"com/models/servser_model/users"
 	"com/models/wx"
 	"com/models/wx/article"
+	"com/models/wx/image"
 	"com/models/wx/user"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
@@ -23,7 +24,12 @@ func init() {
 
 	Db.SingularTable(true)
 	//创建表 自动迁移
-	Db.AutoMigrate(&users.Users{},&user.WxUser{},&article.Article{})
+	Db.AutoMigrate(
+		&users.Users{},
+		&user.WxUser{},
+		&article.Article{},
+		&image.Image{},
+		)
 
 	wx.ModelInit(Db)
 }
