@@ -4,7 +4,6 @@ import (
 	"com/middleware/cors"
 	_ "com/models"
 	"com/routers/auth"
-	"com/routers/frontend_router/general_user"
 	"com/routers/servser_router/comment"
 	"com/routers/servser_router/image_src"
 	replyManagement "com/routers/servser_router/reply"
@@ -13,7 +12,6 @@ import (
 	videoManagement "com/routers/servser_router/video"
 	"com/routers/servser_router/video_src"
 	"com/routers/wx/wxLogin"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -99,36 +97,6 @@ func InitRouter() *gin.Engine {
 	{
 		replyApi.GET("/query", replyManagement.QueryReply)
 		replyApi.DELETE("/:id", replyManagement.DeleteReply)
-	}
-
-	//用户管理模块
-
-	//网站接口
-	generalUser := r.Group("/general_user")
-	{
-		generalUser.POST("/login", general_user.Login)
-		generalUser.POST("/registered", general_user.Registered)
-	}
-	generalVideo := r.Group("/general_video")
-	generalVideo.Use(auth.ParseAuth)
-	{
-		generalVideo.GET("/query", videoManagement.QueryVideo)
-	}
-
-	testApi := r.Group("/test")
-	testApi.Use(auth.GetAuth)
-	{
-		testApi.GET("/:id", func(c *gin.Context) {
-			id := c.Param("id")
-			value, _ := c.Get("user")
-			fmt.Println("value", value)
-			c.JSON(http.StatusOK, gin.H{
-				"status": 200,
-				"error":  nil,
-				"data":   "。。。",
-				"id":     id,
-			})
-		})
 	}
 	return r
 }

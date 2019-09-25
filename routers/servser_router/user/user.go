@@ -25,7 +25,7 @@ func Login(c *gin.Context) {
 	if errList != nil {
 		for _, err := range errList {
 			c.JSON(http.StatusOK, gin.H{
-				"status": 400,
+				"status": 200,
 				"error":  err,
 				"data":   "json数据类型不匹配",
 			})
@@ -36,7 +36,7 @@ func Login(c *gin.Context) {
 	user, err := users.FindId()
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
-			"status": 400,
+			"status": 200,
 			"error":  err,
 			"data":   "用户名或密码有问题",
 		})
@@ -78,7 +78,7 @@ func Registered(c *gin.Context) {
 	id, user, err := users.CreateData()
 	if id != 0 {
 		c.JSON(http.StatusOK, gin.H{
-			"status": 400,
+			"status": 200,
 			"error":  "用户名已经存在",
 		})
 		return

@@ -1,13 +1,13 @@
 package video
 
 import (
-	"com/models/servser_model"
+	"com/models/wx"
 	"fmt"
 	"os"
 )
 
 type Video struct {
-	servser_model.Model
+	wx.Model
 	Name         *string  `gorm:"column:name"json:"name"` //片名
 	Pid          *int     `gorm:"column:pid"json:"pid"`
 	Origin       *string  `gorm:"column:origin"json:"origin"`             //产地
@@ -32,14 +32,14 @@ type Video struct {
 
 //上传视频封面
 type ImageSrc struct {
-	servser_model.Model
+	wx.Model
 	Name    *string `gorm:"column:name"json:"name"`
 	SrcPath *string `gorm:"column:src_path"json:"src_path"`
 }
 
 func (this *ImageSrc) DeleteImageSrc(id string) (err error) {
 	image_src := ImageSrc{}
-	query := servser_model.Db.Raw("select * from image_src where id = ?", &id).Scan(&image_src)
+	query := wx.Db.Raw("select * from image_src where id = ?", &id).Scan(&image_src)
 	if err = query.Error; err != nil {
 		return err
 	}
@@ -47,7 +47,7 @@ func (this *ImageSrc) DeleteImageSrc(id string) (err error) {
 	if err != nil {
 		return
 	}
-	delete := servser_model.Db.Exec("delete from image_src where id = ?", &id)
+	delete := wx.Db.Exec("delete from image_src where id = ?", &id)
 	if err = delete.Error; err != nil {
 		return err
 	}
@@ -56,14 +56,14 @@ func (this *ImageSrc) DeleteImageSrc(id string) (err error) {
 
 // 上传视频路径
 type VideoSrc struct {
-	servser_model.Model
+	wx.Model
 	Name    *string `gorm:"column:name"json:"name"`
 	SrcPath *string `gorm:"column:src_path"json:"src_path"`
 }
 
 func (this *VideoSrc) DeleteVideoSrc(id string) (err error) {
 	video_src := VideoSrc{}
-	query := servser_model.Db.Raw("select * from video_src where id = ?", &id).Scan(&video_src)
+	query := wx.Db.Raw("select * from video_src where id = ?", &id).Scan(&video_src)
 	if err = query.Error; err != nil {
 		return err
 	}
@@ -71,7 +71,7 @@ func (this *VideoSrc) DeleteVideoSrc(id string) (err error) {
 	if err != nil {
 		return
 	}
-	delete := servser_model.Db.Exec("delete from video_src where id = ?", &id)
+	delete := wx.Db.Exec("delete from video_src where id = ?", &id)
 	if err = delete.Error; err != nil {
 		return err
 	}
@@ -81,7 +81,7 @@ func (this *VideoSrc) DeleteVideoSrc(id string) (err error) {
 func (this *VideoSrc) CreatedVideoSrc() (int, error) {
 	fmt.Printf("this", this)
 	path := VideoSrc{}
-	find := servser_model.Db.Create(this).Scan(&path)
+	find := wx.Db.Create(this).Scan(&path)
 	if err := find.Error; err != nil {
 		fmt.Println("创建失败", err)
 		return 0, err
@@ -94,7 +94,7 @@ func (this *VideoSrc) CreatedVideoSrc() (int, error) {
 func (this *ImageSrc) CreatedImageSrc() (int, error) {
 	fmt.Printf("this", this)
 	path := ImageSrc{}
-	find := servser_model.Db.Create(this).Scan(&path)
+	find := wx.Db.Create(this).Scan(&path)
 	if err := find.Error; err != nil {
 		fmt.Println("创建失败", err)
 		return 0, err
@@ -106,7 +106,7 @@ func (this *ImageSrc) CreatedImageSrc() (int, error) {
 
 func (this *Video) CreatedVideo() (int, error) {
 	video := Video{}
-	find := servser_model.Db.Create(this).Scan(&video)
+	find := wx.Db.Create(this).Scan(&video)
 	if err := find.Error; err != nil {
 		fmt.Println("创建失败", err)
 		return 0, err
@@ -129,10 +129,10 @@ func (this *Video) QueryVideos(condition string, orderBy string, limit string, o
 	if offset == "" {
 		offset = "0"
 	}
-	count := servser_model.Db.Raw("select * from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where concat(video.name,video.origin,video.years,video.score,video.duration,video.category) like ? order by ? Desc", &cond, &orderBy).Scan(&totalVideo.Videos).RowsAffected
+	count := wx.Db.Raw("select * from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where concat(video.name,video.origin,video.years,video.score,video.duration,video.category) like ? order by ? Desc", &cond, &orderBy).Scan(&totalVideo.Videos).RowsAffected
 	totalVideo.Total = int(count)
 	totalVideo.Videos = nil
-	rows, err := servser_model.Db.Raw("select video.id,video.name,pid,origin,duration,language,years,score,introduction,category,director,actor,video_src_id,image_src_id,image_src.id,image_src.name,image_src.src_path,video_src.id,video_src.name,video_src.src_path from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where concat(video.name,video.origin,video.years,video.score,video.duration,video.category) like ? order by ? Desc limit ? offset ?", &cond, &orderBy, &limit, &offset).Rows()
+	rows, err := wx.Db.Raw("select video.id,video.name,pid,origin,duration,language,years,score,introduction,category,director,actor,video_src_id,image_src_id,image_src.id,image_src.name,image_src.src_path,video_src.id,video_src.name,video_src.src_path from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where concat(video.name,video.origin,video.years,video.score,video.duration,video.category) like ? order by ? Desc limit ? offset ?", &cond, &orderBy, &limit, &offset).Rows()
 	if err != nil {
 		return
 	}
@@ -149,7 +149,7 @@ func (this *Video) QueryVideos(condition string, orderBy string, limit string, o
 }
 
 func (this *Video) FindVideo(Id string) (video Video, err error) {
-	query := servser_model.Db.Raw("select * from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where video.id = ?", &Id).Scan(&video)
+	query := wx.Db.Raw("select * from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where video.id = ?", &Id).Scan(&video)
 	if err = query.Error; err != nil {
 		fmt.Println("查询失败")
 		return
@@ -159,7 +159,7 @@ func (this *Video) FindVideo(Id string) (video Video, err error) {
 
 func (this *Video) UpdateVideo(Id string) (err error) {
 	fmt.Println("id:", Id)
-	update := servser_model.Db.Exec("update video set name = ?, origin = ?, duration = ?, language = ?, years = ?, score = ?, introduction = ?, category = ?,director = ?,actor = ?, video_src_id = ?, image_src_id = ? where id = ?", this.Name, this.Origin,
+	update := wx.Db.Exec("update video set name = ?, origin = ?, duration = ?, language = ?, years = ?, score = ?, introduction = ?, category = ?,director = ?,actor = ?, video_src_id = ?, image_src_id = ? where id = ?", this.Name, this.Origin,
 		this.Duration, this.Language, this.Years, this.Score, this.Introduction, this.Category,this.Director,this.Actor, this.VideoSrcId, this.ImageSrcId, &Id)
 	if err = update.Error; err != nil {
 		return
@@ -169,7 +169,7 @@ func (this *Video) UpdateVideo(Id string) (err error) {
 
 func (this *Video) DeleteVideo(Id string) (err error) {
 	fmt.Println("Id", Id)
-	delete := servser_model.Db.Exec("delete video,video_src,image_src from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where video.id = ?", &Id)
+	delete := wx.Db.Exec("delete video,video_src,image_src from video left join video_src on video.video_src_id = video_src.id left join image_src on video.image_src_id = image_src.id where video.id = ?", &Id)
 	if err = delete.Error; err != nil {
 		return
 	}
