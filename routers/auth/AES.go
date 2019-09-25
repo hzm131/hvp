@@ -2,6 +2,7 @@ package auth
 
 import (
 	"bytes"
+	"com/models/wx/user"
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/base64"
@@ -82,12 +83,13 @@ func ParseAES(c *gin.Context) {
 		fmt.Println("sessionId不能为空")
 		c.JSON(http.StatusOK, gin.H{
 			"status": 401,
-			"error":  "sessionId不存在",
+			"error":  nil,
+			"data":  "sessionId不存在",
 		})
 		c.Abort()
 		return
 	}
-	decryptCode,err := AesDecrypt(h,Key)
+	openId,err := AesDecrypt(h,Key)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"status": 401,
@@ -97,7 +99,29 @@ func ParseAES(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	c.Set("sessionId", decryptCode)
+	wxUser := user.WxUser{
+		OpenId:openId,
+	}
+	wu,err := wxUser.FindOpenId()
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"status": 401,
+			"error":  err,
+			"data":"查询出错",
+		})
+		c.Abort()
+		return
+	}
+	if wu.ID <= 0 {
+		c.JSON(http.StatusOK, gin.H{
+			"status": 401,
+			"error":  nil,
+			"data":"不存在此用户",
+		})
+		c.Abort()
+		return
+	}
+	c.Set("openId", wu.OpenId)
 	c.Next()
 	return
 }
