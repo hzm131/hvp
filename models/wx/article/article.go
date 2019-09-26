@@ -2,7 +2,7 @@ package article
 
 import (
 	"com/models/wx"
-	"com/models/wx/user"
+	"com/models/wx/wxuser"
 )
 
 type Article struct {
@@ -11,6 +11,6 @@ type Article struct {
 	Title  string `gorm:"column:title"json:"title"` //标题
 	Category  string `gorm:"column:category"json:"category"`  //类别
 	OpenId int `gorm:"column:openid"json:"openid"`
-	WxUser user.WxUser `gorm:"ForeignKey:OpenId;AssociationForeignKey:OpenId"json:"wxUser"`
+	WxUser wxuser.WxUser `gorm:"ForeignKey:OpenId;AssociationForeignKey:OpenId"json:"wxUser"`
 
 }

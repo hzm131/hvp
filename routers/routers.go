@@ -4,14 +4,13 @@ import (
 	"com/middleware/cors"
 	_ "com/models"
 	"com/routers/auth"
-	"com/routers/servser_router/comment"
 	"com/routers/servser_router/image_src"
-	replyManagement "com/routers/servser_router/reply"
 	"com/routers/servser_router/upload"
-	"com/routers/servser_router/user"
 	videoManagement "com/routers/servser_router/video"
 	"com/routers/servser_router/video_src"
+	commentRoute "com/routers/wx/comment"
 	"com/routers/wx/uploadImg"
+	"com/routers/wx/user"
 	"com/routers/wx/wxLogin"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -68,7 +67,20 @@ func InitRouter() *gin.Engine {
 		uploadApi.POST("/image", uploadImg.UploadImage) //上传图片
 	}
 
-
+	//评论
+	commentApi := r.Group("/comment")
+	commentApi.Use(auth.GetAuth)
+	{
+		commentApi.GET("/query", commentRoute.QueryComment)
+		commentApi.DELETE("/:id", commentRoute.DeleteComment)
+	}
+	//回复
+	replyApi := r.Group("/reply")
+	replyApi.Use(auth.GetAuth)
+	{
+		replyApi.GET("/query", commentRoute.QueryReply)
+		replyApi.DELETE("/:id", commentRoute.DeleteReply)
+	}
 
 
 
@@ -86,19 +98,5 @@ func InitRouter() *gin.Engine {
 		videoApi.DELETE("/video/delete/:id", video_src.DeleteImageSrc)
 	}
 
-	//评论
-	commentApi := r.Group("/comment")
-	videoApi.Use(auth.GetAuth)
-	{
-		commentApi.GET("/query", commentManagement.QueryComment)
-		commentApi.DELETE("/:id", commentManagement.DeleteComment)
-	}
-	//回复
-	replyApi := r.Group("/reply")
-	videoApi.Use(auth.GetAuth)
-	{
-		replyApi.GET("/query", replyManagement.QueryReply)
-		replyApi.DELETE("/:id", replyManagement.DeleteReply)
-	}
 	return r
 }

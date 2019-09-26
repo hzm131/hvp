@@ -2,7 +2,7 @@ package auth
 
 import (
 	"bytes"
-	"com/models/wx/user"
+	"com/models/wx/wxuser"
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/base64"
@@ -99,7 +99,7 @@ func ParseAES(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	wxUser := user.WxUser{
+	wxUser := wxuser.WxUser{
 		OpenId:openId,
 	}
 	wu,err := wxUser.FindOpenId()

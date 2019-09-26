@@ -9,6 +9,7 @@ type Users struct {
 	wx.Model
 	UserName string `gorm:"column:username"json:"username"validate:"required||string"`
 	PassWord string `gorm:"column:password"json:"password"validate:"required||string"`
+	OpenId string `gorm:"column:openid"json:"openid"`
 }
 
 func (this *Users) FindId() (Users, error) {

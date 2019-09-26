@@ -1,4 +1,4 @@
-package user
+package wxuser
 
 import (
 	"com/models/wx"

@@ -1,7 +1,7 @@
 package wxLogin
 
 import (
-	"com/models/wx/user"
+	"com/models/wx/wxuser"
 	"com/routers/auth"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
@@ -16,7 +16,7 @@ func Login(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	user := user.WxUser{}
+	user := wxuser.WxUser{}
 	err = json.Unmarshal(value,&user)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{

@@ -1,11 +1,12 @@
 package models
 
 import (
-	"com/models/servser_model/users"
 	"com/models/wx"
 	"com/models/wx/article"
+	"com/models/wx/comment"
 	"com/models/wx/image"
-	"com/models/wx/user"
+	"com/models/wx/users"
+	"com/models/wx/wxuser"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 )
@@ -26,9 +27,11 @@ func init() {
 	//创建表 自动迁移
 	Db.AutoMigrate(
 		&users.Users{},
-		&user.WxUser{},
+		&wxuser.WxUser{},
 		&article.Article{},
 		&image.Image{},
+		&comment.Comment{},
+		&comment.Reply{},
 		)
 
 	wx.ModelInit(Db)

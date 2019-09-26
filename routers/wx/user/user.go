@@ -2,7 +2,7 @@ package user
 
 import (
 	"com/middleware/jwt"
-	"com/models/servser_model/users"
+	"com/models/wx/users"
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"

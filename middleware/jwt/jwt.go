@@ -2,7 +2,7 @@ package jwt
 
 import (
 	"com/models/frontend_model/general_user"
-	"com/models/servser_model/users"
+	"com/models/wx/users"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"

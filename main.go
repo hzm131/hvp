@@ -7,5 +7,5 @@ import (
 func main() {
 	r := routers.InitRouter()
 
-	r.Run("192.168.2.166:3000")
+	r.Run("127.0.0.1:3000")
 }
