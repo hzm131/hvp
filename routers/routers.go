@@ -60,10 +60,6 @@ func InitRouter() *gin.Engine {
 		userApi.POST("/registered", user.Registered)
 	}
 
-
-
-
-
 	//上传模块
 	uploadApi := r.Group("/upload")
 	uploadApi.Use(auth.GetAuth)
@@ -71,6 +67,11 @@ func InitRouter() *gin.Engine {
 		uploadApi.POST("/video", upload.UploadVideo) //上传视频
 		uploadApi.POST("/image", uploadImg.UploadImage) //上传图片
 	}
+
+
+
+
+
 
 	videoApi := r.Group("/video")
 	videoApi.Use(auth.GetAuth)

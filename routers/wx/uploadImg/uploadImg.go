@@ -1,14 +1,53 @@
 package uploadImg
 
 import (
-	"com/models/wx/image"
+	image2 "com/models/wx/image"
+	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"io"
 	"net/http"
 	"os"
+	"reflect"
+	"strconv"
 )
 
+
+
+
+
 func UploadImage(c *gin.Context) {
+	value,_ := c.Get("user")
+
+	//获取用户id
+	id,err := MapInter(value)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"status": 400,
+			"error":  err,
+			"data":   "",
+		})
+		return
+	}
+	intId := int(id)
+	strId := strconv.Itoa(intId)
+
+	//判断文件夹是否已经存在
+	bool,err := PathExists("public/upload/images/" + strId)
+	if err != nil || bool == false{
+		//不存在就创建目录
+		err = os.Mkdir("public/upload/images/" + strId, os.ModePerm)
+		if err != nil {
+			c.JSON(http.StatusOK, gin.H{
+				"status": 400,
+				"error":  err,
+				"data":   "创建目录失败",
+			})
+			return
+		}
+	}
+
+	//获取上传的信息
 	file, header, err := c.Request.FormFile("image")
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
@@ -21,7 +60,8 @@ func UploadImage(c *gin.Context) {
 	//文件的名称
 	filename := header.Filename
 
-	bool,err := PathExists("public/upload/images/"+filename)
+	//判断文件是否已经存在
+	bool,err = PathExists("public/upload/images/"+strId+"/"+filename)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"status": 400,
@@ -38,8 +78,9 @@ func UploadImage(c *gin.Context) {
 		})
 		return
 	}
+
 	//创建空文件
-	out, err := os.Create("public/upload/images/" + filename)
+	out, err := os.Create("public/upload/images/" + strId+"/"+filename)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"status": 400,
@@ -59,9 +100,8 @@ func UploadImage(c *gin.Context) {
 		})
 		return
 	}
-	//封面表添加
-	str := "http://127.0.0.1:3000/images/" + filename
-	src := image.Image{
+	str := "http://192.168.2.166:3000/images/"+ strId+"/" + filename
+	src := image2.Image{
 		Src: str,
 		Title:filename,
 	}
@@ -70,7 +110,7 @@ func UploadImage(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"status": 400,
 			"error":  err,
-			"data":   "封面添加数据库失败",
+			"data":   "添加数据库失败",
 		})
 		return
 	}
@@ -90,4 +130,20 @@ func PathExists(path string) (bool,error) {
 		return false,nil
 	}
 	return false, err
+}
+
+func MapInter (value interface{}) (id float64,err error){
+	v,ok := value.(map[string]interface{})
+	if !ok {
+		err = errors.New("user数据不是map[string]interface{}")
+		return
+	}
+	for key,val := range v {
+		if key == "id"{
+			fmt.Println("v1 type:", reflect.TypeOf(val))
+			int := val.(float64)
+			id = int
+		}
+	}
+	return
 }
