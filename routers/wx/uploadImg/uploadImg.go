@@ -100,7 +100,7 @@ func UploadImage(c *gin.Context) {
 		})
 		return
 	}
-	str := "http://127.0.0.1:3000/images/"+ strId+"/" + filename
+	str := "http://192.168.2.166:3000/images/"+ strId+"/" + filename
 	src := image2.Image{
 		Src: str,
 		Title:filename,

@@ -10,7 +10,6 @@ type Image struct {
 	OpenId string `gorm:"column:openid"json:"openid"`
 	Title string  `gorm:"column:title"json:"title"`
 	Src string `gorm:"column:src"json:"src"`
-
 }
 
 func (this *Image) CreatedImage() (image Image,err error) {
