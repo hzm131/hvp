@@ -62,6 +62,7 @@ func InitRouter() *gin.Engine {
 	{
 		uploadApi.POST("/video", upload.UploadVideo) //上传视频
 		uploadApi.POST("/image", upload.UploadImage) //上传图片
+		uploadApi.POST("/audio", upload.UploadAudio) //上传音频
 	}
 
 

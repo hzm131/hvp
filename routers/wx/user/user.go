@@ -36,9 +36,19 @@ func Login(c *gin.Context) {
 	user, err := users.FindId()
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
-			"status": 200,
+			"status": 400,
 			"error":  err,
 			"data":   "用户名或密码有问题",
+		})
+		return
+	}
+
+	wxu,err := users.WxInfo(user.OpenId)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"status": 400,
+			"error":  err,
+			"data":   "openid有问题",
 		})
 		return
 	}
@@ -53,6 +63,7 @@ func Login(c *gin.Context) {
 		"error":  nil,
 		"data":   str,
 		"user":   user,
+		"wxuser": wxu,
 	})
 }
 

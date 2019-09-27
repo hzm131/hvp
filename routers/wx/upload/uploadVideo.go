@@ -6,14 +6,13 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"strconv"
 )
 
 func UploadVideo(c *gin.Context) {
 	value,_ := c.Get("user")
 
 	//获取用户id
-	id,err := MapInter(value)
+	openid,err := MapInter(value)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"status": 400,
@@ -22,14 +21,12 @@ func UploadVideo(c *gin.Context) {
 		})
 		return
 	}
-	intId := int(id)
-	strId := strconv.Itoa(intId)
 
 	//判断文件夹是否已经存在
-	bool,err := PathExists("public/upload/videos/" + strId)
+	bool,err := PathExists("public/upload/videos/" + openid)
 	if err != nil || bool == false{
 		//不存在就创建目录
-		err = os.Mkdir("public/upload/videos/" + strId, os.ModePerm)
+		err = os.Mkdir("public/upload/videos/" + openid, os.ModePerm)
 		if err != nil {
 			c.JSON(http.StatusOK, gin.H{
 				"status": 400,
@@ -54,7 +51,7 @@ func UploadVideo(c *gin.Context) {
 	filename := header.Filename
 
 	//判断文件是否已经存在
-	bool,err = PathExists("public/upload/videos/"+strId+"/"+filename)
+	bool,err = PathExists("public/upload/videos/"+openid+"/"+filename)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"status": 400,
@@ -73,7 +70,7 @@ func UploadVideo(c *gin.Context) {
 	}
 
 	//创建空文件
-	out, err := os.Create("public/upload/videos/" + strId+"/"+filename)
+	out, err := os.Create("public/upload/videos/" + openid+"/"+filename)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"status": 400,
@@ -93,7 +90,7 @@ func UploadVideo(c *gin.Context) {
 		})
 		return
 	}
-	str := "http://192.168.2.166:3000/videos/"+ strId+"/" + filename
+	str := "http://192.168.2.166:3000/videos/"+ openid+"/" + filename
 	src := upload.Video{
 		Src: str,
 		Title:filename,

@@ -31,6 +31,7 @@ func init() {
 		&article.Article{},
 		&upload.Image{},
 		&upload.Video{},
+		&upload.Audio{},
 		&comment.Comment{},
 		&comment.Reply{},
 		)

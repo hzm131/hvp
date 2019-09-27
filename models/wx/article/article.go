@@ -12,5 +12,4 @@ type Article struct {
 	Category  string `gorm:"column:category"json:"category"`  //类别
 	OpenId int `gorm:"column:openid"json:"openid"`
 	WxUser wxuser.WxUser `gorm:"ForeignKey:OpenId;AssociationForeignKey:OpenId"json:"wxUser"`
-
 }
