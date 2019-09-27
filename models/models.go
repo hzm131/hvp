@@ -4,7 +4,7 @@ import (
 	"com/models/wx"
 	"com/models/wx/article"
 	"com/models/wx/comment"
-	"com/models/wx/image"
+	"com/models/wx/upload"
 	"com/models/wx/users"
 	"com/models/wx/wxuser"
 	_ "github.com/go-sql-driver/mysql"
@@ -29,7 +29,8 @@ func init() {
 		&users.Users{},
 		&wxuser.WxUser{},
 		&article.Article{},
-		&image.Image{},
+		&upload.Image{},
+		&upload.Video{},
 		&comment.Comment{},
 		&comment.Reply{},
 		)

@@ -1,4 +1,4 @@
-package upload
+package uploadS
 
 import (
 	"com/models/servser_model/video"

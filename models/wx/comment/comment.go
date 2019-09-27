@@ -32,6 +32,7 @@ type QueryComment struct {
 	ArticleId 	int    `json:"article_id"`
 	Title 	string    `json:"title"`
 	NickName 	string    `json:"nickName"`
+	AvatarUrl string `json:"avatarUrl"`
 }
 
 type TotalComment struct {
@@ -48,11 +49,11 @@ func (this *Comment) QueryComment(condition string, orderBy string, limit string
 	if offset == "" {
 		offset = "0"
 	}
-	count := wx.Db.Raw("select comment.id,comment.created_at,comment.content,comment.general_openid,comment.awesome,comment.article_id,article.title,wx_user.nickName from wx_user inner join comment on comment.general_openid = wx_user.openid inner join article on comment.article_id = article.id  where concat(article.title,wx_user.nickName) like ? order by ? Desc", &cond, &orderBy).Scan(&totalComment.Comments).RowsAffected
+	count := wx.Db.Raw("select comment.id,comment.created_at,comment.content,comment.general_openid,comment.awesome,comment.article_id,article.title,wx_user.nickName,wx_user.avatarUrl from wx_user inner join comment on comment.general_openid = wx_user.openid inner join article on comment.article_id = article.id  where concat(article.title,wx_user.nickName) like ? order by ? Desc", &cond, &orderBy).Scan(&totalComment.Comments).RowsAffected
 	totalComment.Total = int(count)
 	totalComment.Comments = nil
 
-	rows, err := wx.Db.Raw("select comment.id,comment.created_at,comment.content,comment.general_openid,comment.awesome,comment.article_id,article.title,wx_user.nickName from wx_user inner join comment on comment.general_openid = wx_user.openid inner join article on comment.article_id = article.id  where concat(article.title,wx_user.nickName) like ? order by ? Desc limit ? offset ?", &cond, &orderBy, &limit, &offset).Rows()
+	rows, err := wx.Db.Raw("select comment.id,comment.created_at,comment.content,comment.general_openid,comment.awesome,comment.article_id,article.title,wx_user.nickName,wx_user.avatarUrl from wx_user inner join comment on comment.general_openid = wx_user.openid inner join article on comment.article_id = article.id  where concat(article.title,wx_user.nickName) like ? order by ? Desc limit ? offset ?", &cond, &orderBy, &limit, &offset).Rows()
 	if err != nil {
 		return
 	}
@@ -60,7 +61,7 @@ func (this *Comment) QueryComment(condition string, orderBy string, limit string
 
 	for rows.Next() {
 		comment := QueryComment{}
-		rows.Scan(&comment.ID, &comment.CreatedAt, &comment.Content, &comment.GeneralOpenId, &comment.Awesome, &comment.ArticleId, &comment.Title, &comment.NickName)
+		rows.Scan(&comment.ID, &comment.CreatedAt, &comment.Content, &comment.GeneralOpenId, &comment.Awesome, &comment.ArticleId, &comment.Title, &comment.NickName,&comment.AvatarUrl)
 		totalComment.Comments = append(totalComment.Comments, comment)
 	}
 	return
@@ -98,8 +99,10 @@ type QueryReply struct {
 	Content       string   	`json:"content"`
 	ReplyOpenId   int  		`json:"reply_openid"`
 	RyNickName string 		`json:"ryNickName"`
+	RyAvatarUrl string 		`json:"ryAvatarUrl"`
 	GeneralOpenId  int   	`json:"general_openid"`
 	GlNickName string 		`json:"glNickName"`
+	GlAvatarUrl string 		`json:"glAvatarUrl"`
 	Awesome       *int     	`json:"awesome"`
 }
 
@@ -122,8 +125,10 @@ func (this *Reply) QueryReply(commentId string, limit string, offset string) (to
        reply.awesome,
        reply.created_at,
        ry.nickName,
+       ry.avatarUrl,
        reply.general_openid,
-       gl.nickName
+       gl.nickName,
+       gl.avatarUrl,
 from reply inner join comment on
         reply.comment_id = comment.id inner join wx_user as ry on
         ry.openid = reply.reply_openid inner join wx_user as gl on
@@ -139,8 +144,10 @@ where comment.id = ?`, &commentId).Scan(&totalReply.Replys).RowsAffected
        reply.awesome,
        reply.created_at,
        ry.nickName,
+	   ry.avatarUrl,
        reply.general_openid,
-       gl.nickName
+       gl.nickName,
+       gl.avatarUrl,
 from reply inner join comment on
         reply.comment_id = comment.id inner join wx_user as ry on
         ry.openid = reply.reply_openid inner join wx_user as gl on
@@ -152,7 +159,7 @@ where comment.id = ? limit ? offset ?`, &commentId, &limit, &offset).Rows()
 	defer rows.Close()
 	for rows.Next() {
 		reply := QueryReply{}
-		err = rows.Scan(&reply.ID, &reply.Content, &reply.ReplyOpenId, &reply.CommentId, &reply.Awesome, &reply.CreatedAt, &reply.RyNickName, &reply.GeneralOpenId, &reply.GlNickName)
+		err = rows.Scan(&reply.ID, &reply.Content, &reply.ReplyOpenId, &reply.CommentId, &reply.Awesome, &reply.CreatedAt, &reply.RyNickName,&reply.RyAvatarUrl, &reply.GeneralOpenId, &reply.GlNickName,&reply.GlAvatarUrl)
 		if err != nil {
 			return
 		}

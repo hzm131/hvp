@@ -1,22 +1,15 @@
-package uploadImg
+package upload
 
 import (
-	image2 "com/models/wx/image"
-	"errors"
-	"fmt"
+	"com/models/wx/upload"
 	"github.com/gin-gonic/gin"
 	"io"
 	"net/http"
 	"os"
-	"reflect"
 	"strconv"
 )
 
-
-
-
-
-func UploadImage(c *gin.Context) {
+func UploadVideo(c *gin.Context) {
 	value,_ := c.Get("user")
 
 	//获取用户id
@@ -33,10 +26,10 @@ func UploadImage(c *gin.Context) {
 	strId := strconv.Itoa(intId)
 
 	//判断文件夹是否已经存在
-	bool,err := PathExists("public/upload/images/" + strId)
+	bool,err := PathExists("public/upload/videos/" + strId)
 	if err != nil || bool == false{
 		//不存在就创建目录
-		err = os.Mkdir("public/upload/images/" + strId, os.ModePerm)
+		err = os.Mkdir("public/upload/videos/" + strId, os.ModePerm)
 		if err != nil {
 			c.JSON(http.StatusOK, gin.H{
 				"status": 400,
@@ -48,7 +41,7 @@ func UploadImage(c *gin.Context) {
 	}
 
 	//获取上传的信息
-	file, header, err := c.Request.FormFile("image")
+	file, header, err := c.Request.FormFile("video")
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"status": 400,
@@ -61,7 +54,7 @@ func UploadImage(c *gin.Context) {
 	filename := header.Filename
 
 	//判断文件是否已经存在
-	bool,err = PathExists("public/upload/images/"+strId+"/"+filename)
+	bool,err = PathExists("public/upload/videos/"+strId+"/"+filename)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"status": 400,
@@ -80,7 +73,7 @@ func UploadImage(c *gin.Context) {
 	}
 
 	//创建空文件
-	out, err := os.Create("public/upload/images/" + strId+"/"+filename)
+	out, err := os.Create("public/upload/videos/" + strId+"/"+filename)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"status": 400,
@@ -100,12 +93,12 @@ func UploadImage(c *gin.Context) {
 		})
 		return
 	}
-	str := "http://192.168.2.166:3000/images/"+ strId+"/" + filename
-	src := image2.Image{
+	str := "http://192.168.2.166:3000/videos/"+ strId+"/" + filename
+	src := upload.Video{
 		Src: str,
 		Title:filename,
 	}
-	image, err := src.CreatedImage()
+	video, err := src.CreatedVideo()
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"status": 400,
@@ -117,33 +110,6 @@ func UploadImage(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"status": 200,
 		"error":  nil,
-		"data":   image,
+		"data":   video,
 	})
-}
-
-func PathExists(path string) (bool,error) {
-	_, err := os.Stat(path)
-	if err == nil {
-		return true, nil
-	}
-	if os.IsNotExist(err) {
-		return false,nil
-	}
-	return false, err
-}
-
-func MapInter (value interface{}) (id float64,err error){
-	v,ok := value.(map[string]interface{})
-	if !ok {
-		err = errors.New("user数据不是map[string]interface{}")
-		return
-	}
-	for key,val := range v {
-		if key == "id"{
-			fmt.Println("v1 type:", reflect.TypeOf(val))
-			int := val.(float64)
-			id = int
-		}
-	}
-	return
 }
